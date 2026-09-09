@@ -1,0 +1,632 @@
+:root {
+  --primary: #4a90d9;
+  --primary-dark: #357abd;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --bg-dark: #1a1a2e;
+  --bg-medium: #16213e;
+  --bg-light: #0f3460;
+  --text-primary: #eaeaea;
+  --text-secondary: #a0a0a0;
+  --border: #333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: var(--bg-medium);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.clipboard-warning {
+  background: var(--warning);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 300px;
+  background: var(--bg-medium);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* Buttons */
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: var(--primary-dark);
+}
+
+button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+button.secondary:hover {
+  background: var(--bg-light);
+}
+
+button.icon-btn {
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+}
+
+button.icon-btn:hover {
+  background: var(--bg-light);
+}
+
+button.delete:hover {
+  background: var(--danger);
+}
+
+/* Forms */
+input, textarea, select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+input[type="checkbox"] {
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+input[type="range"] {
+  padding: 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+/* Dialogs */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog {
+  background: var(--bg-medium);
+  padding: 2rem;
+  border-radius: 8px;
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.dialog h2, .dialog h3 {
+  margin-bottom: 1rem;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Database Manager */
+.database-manager {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.logo h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.logo p {
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.actions button {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+/* Auth Dialog */
+.auth-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-dialog .database-name {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.key-file-upload {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--bg-dark);
+  border-radius: 4px;
+}
+
+.key-file-upload label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.key-file-upload input[type="file"] {
+  padding: 0.5rem;
+}
+
+/* Group Tree */
+.group-tree {
+  padding: 1rem;
+}
+
+.tree-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tree-header h3 {
+  font-size: 1rem;
+}
+
+.group-item {
+  margin-bottom: 0.25rem;
+}
+
+.group-content {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.group-content:hover {
+  background: var(--bg-light);
+}
+
+.group-content.selected {
+  background: var(--primary);
+}
+
+.group-icon {
+  margin-right: 0.5rem;
+}
+
+.group-name {
+  flex: 1;
+}
+
+.group-actions {
+  display: none;
+}
+
+.group-content:hover .group-actions {
+  display: flex;
+}
+
+.add-group-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.add-group-form input {
+  flex: 1;
+}
+
+/* Entry List */
+.entry-list {
+  background: var(--bg-medium);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.list-header h3 {
+  font-size: 1rem;
+}
+
+.count {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--bg-dark);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+tr:hover {
+  background: var(--bg-light);
+}
+
+tr.selected {
+  background: var(--primary);
+}
+
+tr.tan-entry {
+  border-left: 3px solid var(--warning);
+}
+
+tr.tan-used {
+  opacity: 0.5;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem !important;
+}
+
+.badge {
+  background: var(--danger);
+  color: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+/* Entry Form */
+.entry-form {
+  background: var(--bg-medium);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.entry-form h3 {
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Password Generator */
+.password-generator {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+
+.password-generator h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.options {
+  margin-bottom: 1rem;
+}
+
+.slider {
+  margin-bottom: 1rem;
+}
+
+.slider label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.checkboxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.checkboxes label {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.generate-btn {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.generated {
+  background: var(--bg-dark);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.password-display {
+  font-family: monospace;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.use-btn {
+  width: 100%;
+  background: var(--success);
+}
+
+.use-btn:hover {
+  background: #218838;
+}
+
+/* Auto-Type Config */
+.auto-type-config {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.auto-type-config h4 {
+  margin-bottom: 0.5rem;
+}
+
+.help-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.auto-type-config input.invalid {
+  border-color: var(--danger);
+}
+
+.sequence-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.char-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.char-count.over {
+  color: var(--danger);
+}
+
+.examples {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.examples code {
+  background: var(--bg-dark);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+}
+
+/* TAN Wizard */
+.tan-wizard .dialog {
+  min-width: 350px;
+}
+
+.info-box {
+  background: var(--bg-dark);
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.info-box ul {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* TAN Entry */
+.tan-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--bg-dark);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.tan-entry.used {
+  opacity: 0.6;
+}
+
+.tan-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tan-label {
+  color: var(--text-secondary);
+}
+
+.tan-value {
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+.tan-value .expired {
+  color: var(--danger);
+  text-decoration: line-through;
+}
+
+.tan-value .active {
+  color: var(--success);
+}
+
+.tan-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.expired-badge {
+  background: var(--danger);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Utility classes */
+.error {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.success {
+  color: var(--success);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-main {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    max-height: 300px;
+  }
+  
+  .header-actions {
+    flex-wrap: wrap;
+  }
+}
