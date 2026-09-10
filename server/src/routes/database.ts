@@ -1,13 +1,12 @@
 import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
 import { getDb } from '../db/schema';
-import { encrypt, decrypt, encryptToBuffer } from '../crypto/encrypt';
-import { generateKeyFile } from '../crypto/keyFile';
+import { encrypt, decrypt, encryptToBuffer, decryptFromBuffer } from '../crypto/encrypt';
 
 const router = Router();
 
 // REQ-1: Create new database
-router.post('/new', async (req: Request, res: Response) => {
+router.post('/new', (req: Request, res: Response) => {
   try {
     const { name, masterKey } = req.body;
     
@@ -24,7 +23,8 @@ router.post('/new', async (req: Request, res: Response) => {
       settings: {}
     };
     
-    const encrypted = await encrypt(
+    // Encrypt is now synchronous
+    const encrypted = encrypt(
       JSON.stringify(initialData),
       masterKey.password || ''
     );
@@ -55,7 +55,7 @@ router.post('/new', async (req: Request, res: Response) => {
 });
 
 // REQ-24/25/26: Authentication - composite key requires BOTH
-router.post('/open', async (req: Request, res: Response) => {
+router.post('/open', (req: Request, res: Response) => {
   try {
     const { databaseId, masterKey } = req.body;
     
@@ -86,7 +86,8 @@ router.post('/open', async (req: Request, res: Response) => {
     
     // REQ-27: Wrong password = no recovery
     // REQ-28: No backdoor
-    const decrypted = await decryptFromBuffer(
+    // Decrypt is now synchronous
+    const decrypted = decryptFromBuffer(
       database.encrypted_data,
       masterKey.password
     );
@@ -114,7 +115,7 @@ router.post('/open', async (req: Request, res: Response) => {
 });
 
 // Save database
-router.post('/save', async (req: Request, res: Response) => {
+router.post('/save', (req: Request, res: Response) => {
   try {
     const { databaseId, masterKey, data } = req.body;
     
@@ -127,7 +128,8 @@ router.post('/save', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Database not found' });
     }
     
-    const encrypted = await encrypt(
+    // Encrypt is now synchronous
+    const encrypted = encrypt(
       JSON.stringify(data),
       masterKey.password
     );
@@ -145,15 +147,5 @@ router.post('/save', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to save database' });
   }
 });
-
-// Helper function for decryption from buffer
-async function decryptFromBuffer(buffer: Buffer, password: string): Promise<string> {
-  const { decrypt } = await import('../crypto/encrypt');
-  const salt = new Uint8Array(buffer.slice(0, 16));
-  const iv = new Uint8Array(buffer.slice(16, 28));
-  const data = new Uint8Array(buffer.slice(28));
-  
-  return decrypt({ data, iv, salt }, password);
-}
 
 export default router;

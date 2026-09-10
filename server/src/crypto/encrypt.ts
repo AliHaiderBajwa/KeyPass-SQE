@@ -1,68 +1,82 @@
-import { deriveKey, generateSalt } from './keyDerivation';
+import crypto from 'crypto';
+
+const ALGORITHM = 'aes-256-gcm';
+const KEY_LENGTH = 32;
+const IV_LENGTH = 16;
+const SALT_LENGTH = 16;
+const AUTH_TAG_LENGTH = 16;
+const ITERATIONS = 100000;
 
 export interface EncryptedData {
-  data: Uint8Array;
-  iv: Uint8Array;
-  salt: Uint8Array;
+  data: Buffer;
+  iv: Buffer;
+  salt: Buffer;
+  authTag: Buffer;
 }
 
-export async function encrypt(
-  plaintext: string,
-  password: string
-): Promise<EncryptedData> {
+function deriveKeySync(password: string, salt: Buffer): Buffer {
+  return crypto.pbkdf2Sync(password, salt, ITERATIONS, KEY_LENGTH, 'sha256');
+}
+
+export function generateSalt(): Buffer {
+  return crypto.randomBytes(SALT_LENGTH);
+}
+
+export function encrypt(plaintext: string, password: string): EncryptedData {
   const salt = generateSalt();
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveKey(password, salt);
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const key = deriveKeySync(password, salt);
   
-  const encoder = new TextEncoder();
-  const data = encoder.encode(plaintext);
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv, {
+    authTagLength: AUTH_TAG_LENGTH
+  });
   
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    data
-  );
+  const encrypted = Buffer.concat([
+    cipher.update(plaintext, 'utf8'),
+    cipher.final()
+  ]);
+  
+  const authTag = cipher.getAuthTag();
   
   return {
-    data: new Uint8Array(encrypted),
+    data: encrypted,
     iv,
-    salt
+    salt,
+    authTag
   };
 }
 
-export async function decrypt(
-  encryptedData: EncryptedData,
-  password: string
-): Promise<string> {
-  const key = await deriveKey(password, encryptedData.salt);
+export function decrypt(encryptedData: EncryptedData, password: string): string {
+  const key = deriveKeySync(password, encryptedData.salt);
   
-  const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: encryptedData.iv },
-    key,
-    encryptedData.data
-  );
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, encryptedData.iv, {
+    authTagLength: AUTH_TAG_LENGTH
+  });
   
-  const decoder = new TextDecoder();
-  return decoder.decode(decrypted);
+  decipher.setAuthTag(encryptedData.authTag);
+  
+  const decrypted = Buffer.concat([
+    decipher.update(encryptedData.data),
+    decipher.final()
+  ]);
+  
+  return decrypted.toString('utf8');
 }
 
 export function encryptToBuffer(encrypted: EncryptedData): Buffer {
-  const combined = new Uint8Array(
-    encrypted.salt.length + encrypted.iv.length + encrypted.data.length
-  );
-  combined.set(encrypted.salt, 0);
-  combined.set(encrypted.iv, encrypted.salt.length);
-  combined.set(encrypted.data, encrypted.salt.length + encrypted.iv.length);
-  return Buffer.from(combined);
+  return Buffer.concat([
+    encrypted.salt,
+    encrypted.iv,
+    encrypted.authTag,
+    encrypted.data
+  ]);
 }
 
-export function decryptFromBuffer(
-  buffer: Buffer,
-  password: string
-): Promise<string> {
-  const salt = new Uint8Array(buffer.slice(0, 16));
-  const iv = new Uint8Array(buffer.slice(16, 28));
-  const data = new Uint8Array(buffer.slice(28));
+export function decryptFromBuffer(buffer: Buffer, password: string): string {
+  const salt = buffer.slice(0, SALT_LENGTH);
+  const iv = buffer.slice(SALT_LENGTH, SALT_LENGTH + IV_LENGTH);
+  const authTag = buffer.slice(SALT_LENGTH + IV_LENGTH, SALT_LENGTH + IV_LENGTH + AUTH_TAG_LENGTH);
+  const data = buffer.slice(SALT_LENGTH + IV_LENGTH + AUTH_TAG_LENGTH);
   
-  return decrypt({ data, iv, salt }, password);
+  return decrypt({ data, iv, salt, authTag }, password);
 }

@@ -1,35 +1,12 @@
-const ITERATIONS = 100000;
-const KEY_LENGTH = 256;
+import crypto from 'crypto';
 
-export async function deriveKey(
-  password: string,
-  salt: Uint8Array
-): Promise<CryptoKey> {
-  const encoder = new TextEncoder();
-  const passwordBuffer = encoder.encode(password);
-  
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    passwordBuffer,
-    'PBKDF2',
-    false,
-    ['deriveKey']
-  );
-  
-  return crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt,
-      iterations: ITERATIONS,
-      hash: 'SHA-256'
-    },
-    keyMaterial,
-    { name: 'AES-GCM', length: KEY_LENGTH },
-    false,
-    ['encrypt', 'decrypt']
-  );
+const ITERATIONS = 100000;
+const KEY_LENGTH = 32;
+
+export function deriveKey(password: string, salt: Buffer): Buffer {
+  return crypto.pbkdf2Sync(password, salt, ITERATIONS, KEY_LENGTH, 'sha256');
 }
 
-export function generateSalt(): Uint8Array {
-  return crypto.getRandomValues(new Uint8Array(16));
+export function generateSalt(): Buffer {
+  return crypto.randomBytes(16);
 }
