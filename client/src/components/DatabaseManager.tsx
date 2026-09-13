@@ -9,8 +9,8 @@ import {
 
 interface DatabaseManagerProps {
   loading: boolean;
-  onCreate: (name: string, password: string, keyFilePath?: string) => Promise<boolean>;
-  onOpen: (name: string, password: string, keyFilePath?: string) => Promise<boolean>;
+  onCreate: (name: string, password: string, keyFilePath?: string) => Promise<{ ok: boolean; error?: string }>;
+  onOpen: (name: string, password: string, keyFilePath?: string) => Promise<{ ok: boolean; error?: string }>;
 }
 
 export function DatabaseManager({ loading, onCreate, onOpen }: DatabaseManagerProps) {
@@ -48,16 +48,24 @@ export function DatabaseManager({ loading, onCreate, onOpen }: DatabaseManagerPr
       return;
     }
 
-    const success = await onCreate(name, password, useKeyFile ? keyFilePath : undefined);
-    if (success) reset();
+    const result = await onCreate(name, password, useKeyFile ? keyFilePath : undefined);
+    if (result.ok) {
+      reset();
+    } else if (result.error) {
+      setError(result.error);
+    }
   };
 
   const handleOpen = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const success = await onOpen(name, password, useKeyFile ? keyFilePath : undefined);
-    if (success) reset();
+    const result = await onOpen(name, password, useKeyFile ? keyFilePath : undefined);
+    if (result.ok) {
+      reset();
+    } else if (result.error) {
+      setError(result.error);
+    }
   };
 
   if (view === 'create') {

@@ -174,11 +174,11 @@ export function EntryDetail({
             <div className="flex items-center gap-4 text-xs text-[var(--color-text-tertiary)]">
               <div className="flex items-center gap-1.5">
                 <Clock size={12} />
-                Created: {new Date(entry.createdAt).toLocaleDateString()}
+                Created: {new Date((entry as any).createdAt || (entry as any).created_at || '').toLocaleDateString()}
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock size={12} />
-                Updated: {new Date(entry.updatedAt).toLocaleDateString()}
+                Updated: {new Date((entry as any).updatedAt || (entry as any).updated_at || '').toLocaleDateString()}
               </div>
             </div>
           </div>

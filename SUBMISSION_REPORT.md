@@ -584,6 +584,40 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Related Test Case** | TC-16 |
 | **Status** | Open |
 
+#### BUG-003: Open Database Error Message Not Displayed Inline
+
+| Field | Value |
+|-------|-------|
+| **Title** | Incorrect password error not shown in UI form |
+| **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
+| **Preconditions** | Database exists with known password |
+| **Reproduction Steps** | 1. Click "Open Existing Database"<br>2. Enter correct database name<br>3. Enter wrong password<br>4. Click "Open Database" |
+| **Expected Result** | Red error message "Invalid master password" appears below the form |
+| **Actual Result** | Server returns 401 but no error message displayed; user sees no feedback |
+| **Reproducibility** | 100% |
+| **Severity** | Major |
+| **Priority** | High |
+| **Related Test Case** | TC-05 |
+| **Fix Applied** | Modified `useDatabase.ts` to return `{ ok, error }` object instead of boolean; updated `DatabaseManager.tsx` to capture and display error message inline |
+| **Status** | Fixed during testing |
+
+#### BUG-004: Entry Timestamps Display as "Invalid Date"
+
+| Field | Value |
+|-------|-------|
+| **Title** | Created/Updated timestamps show "Invalid Date" |
+| **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
+| **Preconditions** | Any entry created in the database |
+| **Reproduction Steps** | 1. Create any entry<br>2. Click on entry to view detail<br>3. Observe "Created:" and "Updated:" fields |
+| **Expected Result** | Human-readable date string (e.g., "2026-09-13 14:30") |
+| **Actual Result** | Shows "Invalid Date" for both fields |
+| **Reproducibility** | 100% |
+| **Severity** | Minor |
+| **Priority** | Low |
+| **Related Test Case** | TC-08, TC-10 |
+| **Fix Applied** | Updated `EntryDetail.tsx` to handle both `createdAt`/`created_at` from server response |
+| **Status** | Fixed during testing |
+
 ### Final Quality Judgment (300-400 words)
 
 The evaluated 10-requirement scope of the KeyPass application demonstrates acceptable quality for the selected functional and non-functional requirements, with limitations that are documented and defensible.

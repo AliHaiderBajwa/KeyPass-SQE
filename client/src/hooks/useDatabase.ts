@@ -80,10 +80,10 @@ export function useDatabase() {
         });
 
         addToast('success', 'Database created successfully');
-        return true;
+        return { ok: true };
       } catch (err: any) {
         addToast('error', err.message);
-        return false;
+        return { ok: false, error: err.message };
       } finally {
         setLoading(false);
       }
@@ -114,10 +114,10 @@ export function useDatabase() {
         });
 
         addToast('success', 'Database unlocked');
-        return true;
+        return { ok: true };
       } catch (err: any) {
         addToast('error', err.message);
-        return false;
+        return { ok: false, error: err.message };
       } finally {
         setLoading(false);
       }
