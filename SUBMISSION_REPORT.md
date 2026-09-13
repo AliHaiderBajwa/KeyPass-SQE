@@ -6,7 +6,7 @@
 **Team:** Ali Haider Bajwa (24i-3102) & Abdul Wadood (24i-3055)
 **GitHub:** https://github.com/AliHaiderBajwa/KeyPass-SQE.git
 **SonarCloud:** https://sonarcloud.io/dashboard?id=AliHaiderBajwa_KeyPass-SQE
-**Jira Project:** KAN — https://alihaiderbajwa123.atlassian.net/jira/software/projects/KAN/
+**Jira Project:** KAN — https://abdulwadood3055.atlassian.net/jira/software/projects/KAN/
 
 ### Submission Checklist
 
@@ -29,7 +29,7 @@
 | Test condition table (Table A) | Complete | Part 3B (lines 257-282) |
 | Test case records (Table B) | Complete | Part 3B (lines 284-524) |
 | Traceability table (Table C) | Complete | Part 3B (lines 528-547) |
-| Jira defect evidence | **PLACEHOLDER** | Part 4 — to be logged before submission |
+| Jira defect evidence | Complete | Part 4 — KAN-4, KAN-5, KAN-6, KAN-7 logged with attachments |
 | Final quality judgment (300-400 words) | Complete | Part 4 (lines 619-629) |
 
 ---
@@ -405,7 +405,7 @@ cd client && npx vite --port 5173
 | **Expected Result** | Error: "Invalid master password" displayed below form |
 | **Actual Result** | Server returned 401 Unauthorized (visible in console), but no error message displayed in the UI — user sees no feedback |
 | **Status** | FAILED |
-| **Defect** | BUG-003: Error message not rendered for failed open database operation |
+| **Defect** | KAN-6: Error message not rendered for failed open database operation |
 | **Evidence** | `test-screenshots/TC05-wrong-password.png` — no error message visible in UI; console shows 401 response |
 
 **TC-06: Create Group with Valid Name**
@@ -451,7 +451,7 @@ cd client && npx vite --port 5173
 | **Expected Result** | Entry appears in entry list |
 | **Actual Result** | Entry created successfully; however, entry detail shows "Invalid Date" for Created/Updated timestamps (BUG-004) |
 | **Status** | PASSED |
-| **Note** | BUG-004 observed but does not affect core entry creation |
+| **Note** | KAN-7 observed but does not affect core entry creation |
 | **Evidence** | `test-screenshots/TC08-create-entry.png` — entry created with all fields |
 
 **TC-09: Create Entry with Only Title (Boundary)**
@@ -480,7 +480,7 @@ cd client && npx vite --port 5173
 | **Test Data** | New Username: "updated@test.com" |
 | **Steps** | 1. Select "Twitter" entry<br>2. Click "Edit"<br>3. Change username<br>4. Click "Save Changes" |
 | **Expected Result** | Entry updated with new username |
-| **Actual Result** | Entry updated successfully; BUG-004 ("Invalid Date") still visible in detail view |
+| **Actual Result** | Entry updated successfully; KAN-7 ("Invalid Date") still visible in detail view |
 | **Status** | PASSED |
 | **Evidence** | `test-screenshots/TC10-edit-entry.png` — updated username visible; BUG-004 date issue shown |
 
@@ -557,7 +557,7 @@ cd client && npx vite --port 5173
 | **Expected Result** | Database opens with composite authentication |
 | **Actual Result** | BLOCKED — Key file upload not implemented in web UI; only path input is available but cannot read local files from browser |
 | **Status** | BLOCKED |
-| **Evidence** | `test-screenshots/TC15-keyfile-blocked.png` — key file path input shown; BUG-001 blocks execution |
+| **Evidence** | `test-screenshots/TC15-keyfile-blocked.png` — key file path input shown; KAN-4 blocks execution |
 
 **TC-16: Auto-Type Sequence Parsing**
 
@@ -572,7 +572,7 @@ cd client && npx vite --port 5173
 | **Expected Result** | Auto-Type sequence is recognized and validated |
 | **Actual Result** | FAILED — Auto-Type parsing logic exists in code but no UI trigger or button to invoke Auto-Type; sequence is only validated on entry save, not on "use" |
 | **Status** | FAILED |
-| **Evidence** | `test-screenshots/TC16-autotype-failed.png` — entry with Auto-Type notes; no execution UI; BUG-002 |
+| **Evidence** | `test-screenshots/TC16-autotype-failed.png` — entry with Auto-Type notes; no execution UI; KAN-5 |
 
 ---
 
@@ -584,7 +584,7 @@ cd client && npx vite --port 5173
 | FR1: Create database | COND-02 | TC-02 | PASSED | N/A |
 | FR1: Create database | COND-03 | TC-03 | PASSED | N/A |
 | FR1: Open database | COND-04 | TC-04 | PASSED | N/A |
-| FR1: Open database | COND-05 | TC-05 | FAILED | BUG-003 |
+| FR1: Open database | COND-05 | TC-05 | FAILED | KAN-6 |
 | FR2: Create group | COND-06 | TC-06 | PASSED | N/A |
 | FR2: Create group | COND-07 | TC-07 | PASSED | N/A |
 | FR3: Create entry | COND-09 | TC-08 | PASSED | N/A |
@@ -594,8 +594,8 @@ cd client && npx vite --port 5173
 | FR5: Password generator | COND-16 | TC-12 | PASSED | N/A |
 | FR5: Password generator | COND-17 | TC-13 | PASSED | N/A |
 | NFR2: Clipboard | COND-22 | TC-14 | PASSED | N/A |
-| FR4: Authentication | COND-13 | TC-15 | BLOCKED | BUG-001 |
-| FR6: Auto-Type | COND-18 | TC-16 | FAILED | BUG-002 |
+| FR4: Authentication | COND-13 | TC-15 | BLOCKED | KAN-4 |
+| FR6: Auto-Type | COND-18 | TC-16 | FAILED | KAN-5 |
 
 ---
 
@@ -607,8 +607,8 @@ cd client && npx vite --port 5173
 
 | Field | Value |
 |-------|-------|
-| **Jira Key** | `KAN-001` *(to be created)* |
-| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-001` *(after creation)* |
+| **Jira Key** | `KAN-4` |
+| **Jira URL** | `https://abdulwadood3055.atlassian.net/browse/KAN-4` |
 | **Title** | Key file upload not supported in web interface |
 | **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
 | **Preconditions** | Database created with key file enabled |
@@ -619,14 +619,15 @@ cd client && npx vite --port 5173
 | **Severity** | Major |
 | **Priority** | High |
 | **Related Test Case** | TC-15 |
+| **Supporting Evidence** | `test-screenshots/TC15-keyfile-blocked.png`; Jira attachment `KeyFile_u....png` |
 | **Status** | Open |
 
 #### BUG-002: Auto-Type Feature Has No UI Execution Trigger
 
 | Field | Value |
 |-------|-------|
-| **Jira Key** | `KAN-002` *(to be created)* |
-| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-002` *(after creation)* |
+| **Jira Key** | `KAN-5` |
+| **Jira URL** | `https://abdulwadood3055.atlassian.net/browse/KAN-5` |
 | **Title** | Auto-Type sequence parsed but not executable from UI |
 | **Environment** | Chrome 131, Ubuntu 22.04 |
 | **Preconditions** | Entry exists with "Auto-Type:" prefix in notes |
@@ -637,14 +638,15 @@ cd client && npx vite --port 5173
 | **Severity** | Minor |
 | **Priority** | Medium |
 | **Related Test Case** | TC-16 |
+| **Supporting Evidence** | `test-screenshots/TC16-autotype-failed.png`; Jira attachment `AutoType.png` |
 | **Status** | Open |
 
 #### BUG-003: Open Database Error Message Not Displayed Inline
 
 | Field | Value |
 |-------|-------|
-| **Jira Key** | `KAN-003` *(to be created)* |
-| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-003` *(after creation)* |
+| **Jira Key** | `KAN-6` |
+| **Jira URL** | `https://abdulwadood3055.atlassian.net/browse/KAN-6` |
 | **Title** | Incorrect password error not shown in UI form |
 | **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
 | **Preconditions** | Database exists with known password |
@@ -655,14 +657,15 @@ cd client && npx vite --port 5173
 | **Severity** | Major |
 | **Priority** | High |
 | **Related Test Case** | TC-05 |
+| **Supporting Evidence** | `test-screenshots/TC05-wrong-password.png`; Jira attachment `Wrong_....png`; console shows 401 response |
 | **Status** | Open |
 
 #### BUG-004: Entry Timestamps Display as "Invalid Date"
 
 | Field | Value |
 |-------|-------|
-| **Jira Key** | `KAN-004` *(to be created)* |
-| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-004` *(after creation)* |
+| **Jira Key** | `KAN-7` |
+| **Jira URL** | `https://abdulwadood3055.atlassian.net/browse/KAN-7` |
 | **Title** | Created/Updated timestamps show "Invalid Date" |
 | **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
 | **Preconditions** | Any entry created in the database |
@@ -673,25 +676,24 @@ cd client && npx vite --port 5173
 | **Severity** | Minor |
 | **Priority** | Low |
 | **Related Test Case** | TC-08, TC-10 |
+| **Supporting Evidence** | `test-screenshots/TC08-create-entry.png` (shows "Invalid Date" in detail view); Jira attachment `Invalid_D....png` |
+| **Justification for Logging** | Although TC-08 and TC-10 passed their primary objectives (entry creation/editing), this defect represents a genuine UI display error that affects user experience. It was consistently reproducible and qualifies as a confirmed implementation defect per the defect investigation criteria. |
 | **Status** | Open |
 
 ### Jira Evidence / Export
 
-> **TODO BEFORE SUBMISSION:** Export the following from Jira and include as an attachment or appendix:
-> 1. Jira board screenshot showing KAN-001 through KAN-004
-> 2. Individual issue exports (PDF or screenshot) for each defect
-> 3. Filtered view of all bugs in project KAN
->
-> **Jira Project:** KAN
-> **Jira URL:** https://alihaiderbajwa123.atlassian.net/jira/software/projects/KAN/
-> **Issues to create:**
->
-> | Jira Key | Title | Severity | Status | Related TC |
-> |----------|-------|----------|--------|------------|
-> | KAN-001 | Key file upload not supported in web interface | Major | To Do | TC-15 |
-> | KAN-002 | Auto-Type sequence parsed but not executable from UI | Minor | To Do | TC-16 |
-> | KAN-003 | Incorrect password error not shown in UI form | Major | To Do | TC-05 |
-> | KAN-004 | Created/Updated timestamps show "Invalid Date" | Minor | To Do | TC-08, TC-10 |
+**Jira Project:** KAN
+**Jira URL:** https://abdulwadood3055.atlassian.net/jira/software/projects/KAN/
+**Board:** Kanban board with 4 bugs in "To Do" status
+
+| Jira Key | Title | Severity | Status | Related TC |
+|----------|-------|----------|--------|------------|
+| KAN-4 | Key file upload not supported in web interface | Major | To Do | TC-15 |
+| KAN-5 | Auto-Type sequence parsed but not executable from UI | Minor | To Do | TC-16 |
+| KAN-6 | Incorrect password error not shown in UI form | Major | To Do | TC-05 |
+| KAN-7 | Created/Updated timestamps show "Invalid Date" | Minor | To Do | TC-08, TC-10 |
+
+> **Attachments on each Jira issue:** Screenshot evidence attached (KeyFile_u....png, AutoType.png, Wrong_....png, Invalid_D....png)
 
 ### Final Quality Judgment (300-400 words)
 
@@ -699,8 +701,8 @@ The evaluated 10-requirement scope of the KeyPass application demonstrates mixed
 
 **What the evidence supports:** The core CRUD operations for databases (FR1), groups (FR2), and entries (FR3) function correctly across 11 of 14 test cases. Database creation, group management, and entry creation/editing/deletion all pass. The password generator (FR5) produces valid output at normal and boundary lengths. The clipboard auto-clear mechanism (NFR2) is correctly implemented with a 10-second timer. The encryption implementation (NFR1) uses AES-256-GCM with PBKDF2 key derivation, exceeding the SRS-specified AES-CBC.
 
-**What the evidence does not support:** Four defects were identified during manual testing. BUG-001 (Major): Key file upload not functional in web UI — browser cannot read local files via text input, blocking TC-15. BUG-002 (Minor): Auto-Type has no UI execution trigger — parsing exists but no way to invoke it, causing TC-16 to fail. BUG-003 (Major): Open database error message not displayed — server returns 401 but UI shows no feedback, causing TC-05 to fail. BUG-004 (Minor): Entry timestamps display as "Invalid Date" due to snake_case/camelCase mismatch between server and client.
+**What the evidence does not support:** Four defects were identified during manual testing. KAN-4 (Major): Key file upload not functional in web UI — browser cannot read local files via text input, blocking TC-15. KAN-5 (Minor): Auto-Type has no UI execution trigger — parsing exists but no way to invoke it, causing TC-16 to fail. KAN-6 (Major): Open database error message not displayed — server returns 401 but UI shows no feedback, causing TC-05 to fail. KAN-7 (Minor): Entry timestamps display as "Invalid Date" due to snake_case/camelCase mismatch between server and client.
 
 **AI-introduced assumptions:** Several assumptions affect confidence. Recursive group deletion (deleting all children) is not specified in the SRS. The minimum title requirement for entries deviates from the SRS allowance of empty entries. The replacement of ARC4 with AES-GCM for in-memory encryption improves security but deviates from the specification. All assumptions are documented in Part 1.
 
-**Conclusion:** 12 of 14 test cases pass (86%). The two Major bugs (BUG-001, BUG-003) require attention before the application can be considered release-ready. BUG-001 is justified by browser platform constraints. BUG-003 is a straightforward UI error-handling defect. BUG-002 and BUG-004 are Minor issues. The application demonstrates acceptable quality for core CRUD and password generation features, but the authentication error handling and timestamp display need remediation. The final judgment is limited to the 10 requirements evaluated.
+**Conclusion:** 12 of 14 test cases pass (86%). The two Major bugs (KAN-4, KAN-6) require attention before the application can be considered release-ready. KAN-4 is justified by browser platform constraints — web browsers cannot read local files via text input. KAN-6 is a straightforward UI error-handling defect where the server correctly rejects invalid passwords but the frontend fails to display the error message. KAN-5 and KAN-7 are Minor issues — KAN-5 reflects a platform limitation (keystroke injection is impossible in browsers), and KAN-7 is a date formatting mismatch between server and client. The application demonstrates acceptable quality for core CRUD and password generation features, but the authentication error handling needs remediation. The final judgment is limited to the 10 requirements evaluated.
