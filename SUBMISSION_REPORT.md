@@ -199,50 +199,56 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 - **Organization:** alihaiderbajwa
 - **Server:** SonarCloud (https://sonarcloud.io)
 
+**SonarQube Summary:**
+- **Total Issues:** 115 issues, 24h estimated effort
+- **Security (Vulnerabilities):** 6 issues, 5h 45min effort
+- **Reliability (Bugs):** 70 issues, 6h 10min effort
+- **Maintainability (Code Smells):** 39 issues
+
 **SonarQube Findings (5 meaningful findings):**
 
-#### Finding 1: Code Duplication in Dialog Components
+#### Finding 1: Client-Side Request Forgery via Unsanitized User Input (Security — High)
 
-- **What SonarQube reported:** Duplicated code blocks across `CreateEntryDialog`, `EditEntryDialog`, and `ChangeMasterPasswordDialog` components.
-- **Where it occurs:** `client/src/components/Dialogs.tsx` — form fields and submit handlers are repeated.
-- **Why it matters:** Duplicated code increases maintenance burden and risk of inconsistency when updating one dialog but not the others.
-- **Action:** Extract common form patterns into shared components or hooks. This is a maintainability issue, not a functional defect.
+- **What SonarQube reported:** User-supplied input is used directly in API requests without sanitization, potentially allowing client-side request forgery attacks.
+- **Where it occurs:** `client/src/hooks/useDatabase.ts` lines 188 and 209 — entry creation and update endpoints forward user input to the server.
+- **Why it matters:** An attacker could craft malicious input that causes the server to make unintended requests. This is a **High severity** security vulnerability.
+- **Action:** Sanitize and validate all user input before sending to the server. Implement input validation on both client and server sides.
 
-#### Finding 2: Complex Conditional Logic in GroupSidebar
+#### Finding 2: API Traversal via Unsanitized User Input (Security — Medium)
 
-- **What SonarBox reported:** Nested conditional rendering in `GroupItem` component with multiple state flags.
-- **Where it occurs:** `client/src/components/GroupSidebar.tsx` — `expanded`, `isEditing`, `showMenu` state flags.
-- **Why it matters:** High cyclomatic complexity makes the component harder to test and reason about.
-- **Action:** Break down into smaller sub-components or use a state machine pattern.
+- **What SonarQube reported:** User input is used in API paths without sanitization, potentially allowing directory/path traversal attacks.
+- **Where it occurs:** `client/src/hooks/useDatabase.ts` lines 188 and 209 — entry and group IDs are passed directly in API URLs.
+- **Why it matters:** An attacker could manipulate IDs to access unauthorized resources. This is a **Medium severity** security vulnerability.
+- **Action:** Validate that IDs match expected formats (e.g., UUID) before using them in API calls.
 
-#### Finding 3: No Input Sanitization on Group Names
+#### Finding 3: CORS Configuration Enabled (Security — Medium)
 
-- **What SonarQube reported:** Potential XSS if group names contain HTML/JavaScript.
-- **Where it occurs:** `client/src/components/GroupSidebar.tsx` — `group.name` rendered directly.
-- **Why it matters:** If a user creates a group with a name like `<script>alert('xss')</script>`, it could execute.
-- **Action:** React escapes JSX by default, so this is actually safe. SonarQube may be flagging a false positive.
+- **What SonarQube reported:** Cross-Origin Resource Sharing (CORS) is enabled with permissive settings.
+- **Where it occurs:** `server/src/app.ts` line 10 — `app.use(cors())` with no origin restrictions.
+- **Why it matters:** Permissive CORS allows any origin to make requests to the API, potentially enabling cross-site attacks. This is a **Medium severity** security issue.
+- **Action:** Restrict CORS to specific trusted origins in production. For development, the current configuration is acceptable.
 
-#### Finding 4: Missing Error Handling in Password Generator
+#### Finding 4: Form Label Accessibility Issues (Reliability — Medium)
 
-- **What SonarQube reported:** No error handling if `crypto.randomBytes()` fails.
-- **Where it occurs:** `server/src/app.ts` — password generation endpoint.
-- **Why it matters:** In rare cases (e.g., system entropy exhaustion), random byte generation could fail.
-- **Action:** Add try-catch around the generation logic with a user-friendly error message.
+- **What SonarQube reported:** Form input fields are not properly associated with their labels using `htmlFor`/`id` attributes.
+- **Where it occurs:** Multiple components — `AuthDialog.tsx` L83, `DatabaseManager.tsx` L79, L92, L102, L142.
+- **Why it matters:** Screen readers and assistive technologies cannot properly identify form fields, reducing accessibility for users with disabilities. This is a **Medium severity** reliability issue.
+- **Action:** Add `id` attributes to inputs and `htmlFor` attributes to labels to create proper associations.
 
-#### Finding 5: Hardcoded Port Number
+#### Finding 5: autoFocus Attribute Reduces Accessibility (Reliability — Medium, Maintainability — Low)
 
-- **What SonarQube reported:** Hardcoded port `3001` in server configuration.
-- **Where it occurs:** `server/src/app.ts` — `const PORT = process.env.PORT || 3001;`
-- **Why it matters:** Not a defect (uses environment variable fallback), but could cause issues in production deployment.
-- **Action:** This is acceptable for development. Document the port configuration for deployment.
+- **What SonarQube reported:** The `autoFocus` attribute on form elements can reduce usability and accessibility for users.
+- **Where it occurs:** `AuthDialog.tsx` L78, `DatabaseManager.tsx` L87.
+- **Why it matters:** Automatic focus can disrupt screen reader users and keyboard navigation. SonarQube flags this as both a **Medium reliability** and **Low maintainability** issue.
+- **Action:** Remove `autoFocus` attributes or implement focus management that respects user preferences and accessibility standards.
 
 ### NFR Evaluation
 
 | NFR | SonarQube Evidence | Other Evaluation Method | Finding / Judgment | Limitation |
 |-----|-------------------|------------------------|-------------------|------------|
-| NFR1: Security | Security hotspots: 0 critical, 0 high | Code inspection: AES-256-GCM implemented via Node.js crypto module with PBKDF2 key derivation (100,000 iterations) | Encryption implementation meets security requirements with stronger algorithms than SRS specified | Cannot verify encryption strength without cryptographic audit |
-| NFR2: Performance | N/A (runtime behavior) | Manual testing: Timer-based clipboard clearing implemented | Clipboard clears after 10 seconds in active tab; browser throttling may affect accuracy when tab is inactive | Cannot guarantee exact 10-second clearing in all browser states |
-| NFR3: Reliability | N/A (no reliability metrics) | Code inspection: Database corruption detection via table/column validation | Corruption detection works; no repair functionality implemented | SRS mentions repair but no specification provided; repair not implemented |
+| NFR1: Security | 6 vulnerabilities found (2 High, 3 Medium, 1 Low); security hotspots require review | Code inspection: AES-256-GCM implemented via Node.js crypto module with PBKDF2 key derivation (100,000 iterations) | Encryption implementation meets security requirements; input validation vulnerabilities identified and need remediation | Cannot verify encryption strength without cryptographic audit |
+| NFR2: Performance | N/A (runtime behavior not measured by SonarQube) | Manual testing: Timer-based clipboard clearing implemented using setTimeout | Clipboard clears after 10 seconds in active tab; browser throttling may affect accuracy when tab is inactive | Cannot guarantee exact 10-second clearing in all browser states |
+| NFR3: Reliability | 70 reliability bugs identified; form accessibility issues affect usability | Code inspection: Database corruption detection via table/column validation | Corruption detection works; no repair functionality implemented; accessibility issues need attention | SRS mentions repair but no specification provided; repair not implemented |
 
 ---
 
