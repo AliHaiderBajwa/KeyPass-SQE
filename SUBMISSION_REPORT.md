@@ -482,7 +482,7 @@ cd client && npx vite --port 5173
 | **Expected Result** | Entry updated with new username |
 | **Actual Result** | Entry updated successfully; BUG-004 ("Invalid Date") still visible in detail view |
 | **Status** | PASSED |
-| **Evidence** | `test-screenshots/TC10-dates-fixed.png` — updated username visible; BUG-004 date issue shown |
+| **Evidence** | `test-screenshots/TC10-edit-entry.png` — updated username visible; BUG-004 date issue shown |
 
 **TC-11: Delete Entry**
 
@@ -497,7 +497,7 @@ cd client && npx vite --port 5173
 | **Expected Result** | Entry removed from list |
 | **Actual Result** | Entry deleted successfully |
 | **Status** | PASSED |
-| **Evidence** | `test-screenshots/TC11-main-view.png` — entry list after deletion |
+| **Evidence** | `test-screenshots/TC11-delete-entry.png` — entry list after deletion |
 
 **TC-12: Password Generator (Normal)**
 
