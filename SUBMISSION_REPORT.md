@@ -5,6 +5,32 @@
 **SRS:** KeePass Password Safe v1.10 (2008)
 **Team:** Ali Haider Bajwa (24i-3102) & Abdul Wadood (24i-3055)
 **GitHub:** https://github.com/AliHaiderBajwa/KeyPass-SQE.git
+**SonarCloud:** https://sonarcloud.io/dashboard?id=AliHaiderBajwa_KeyPass-SQE
+**Jira Project:** KAN — https://alihaiderbajwa123.atlassian.net/jira/software/projects/KAN/
+
+### Submission Checklist
+
+| Item | Status | Location |
+|------|--------|----------|
+| Pair details and SRS selection | Complete | This report, top of Part 1 |
+| 7 FR + 3 NFR scope table with AI assumptions | Complete | Part 1 (lines 11-154) |
+| Frozen baseline source code + run instructions | Complete | Part 2 + GitHub repo |
+| AI-assisted development record | Complete | Part 2 (lines 185-189) |
+| SonarQube report/evidence (complete codebase) | Complete | `sonarcube_output.pdf` + Part 3A |
+| SonarQube 5 findings interpreted | Complete | Part 3A (lines 208-243) |
+| NFR1 evaluation (Security/Encryption) | Complete | Part 3A NFR table row 1 |
+| NFR2 evaluation (Clipboard Auto-Clear) | Complete | Part 3A NFR table row 2 |
+| NFR3 evaluation (Reliability/Safety) | Complete | Part 3A NFR table row 3 |
+| 12-15 executed test cases | Complete | Part 3B — 16 test cases (TC-01 to TC-16) |
+| ≥2 boundary test cases | Complete | TC-03, TC-09, TC-13 (3 total) |
+| ≥2 invalid/error test cases | Complete | TC-02, TC-05, TC-07 (3 total) |
+| ≥3 manual system-level test cases | Complete | TC-01, TC-04, TC-06, TC-11, TC-14, TC-15, TC-16 (7 total) |
+| ≥2 FAILED/BLOCKED test cases | Complete | TC-05 (FAILED), TC-15 (BLOCKED), TC-16 (FAILED) |
+| Test condition table (Table A) | Complete | Part 3B (lines 257-282) |
+| Test case records (Table B) | Complete | Part 3B (lines 284-524) |
+| Traceability table (Table C) | Complete | Part 3B (lines 528-547) |
+| Jira defect evidence | **PLACEHOLDER** | Part 4 — to be logged before submission |
+| Final quality judgment (300-400 words) | Complete | Part 4 (lines 619-629) |
 
 ---
 
@@ -188,6 +214,28 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 - **Approach:** The AI was given the SRS document and asked to implement the selected requirements. The AI generated the initial codebase structure, server routes, client components, and database schema. Manual review and adjustments were made to fix API mismatches and ensure correct behavior.
 - **Major assumptions:** See Part 1 AI Assumption column for each requirement.
 
+### Setup / Run Instructions
+
+```bash
+# Clone the repository
+git clone https://github.com/AliHaiderBajwa/KeyPass-SQE.git
+cd KeyPass-SQE
+
+# Install dependencies
+npm install
+cd client && npm install && cd ..
+
+# Start the server (port 3001)
+npx tsx server/src/app.ts
+
+# In a separate terminal, start the client (port 5173)
+cd client && npx vite --port 5173
+
+# Open browser to http://localhost:5173
+```
+
+**Requirements:** Node.js 18+, npm
+
 ---
 
 ## Part 3 — Quality Evaluation (45 marks)
@@ -198,6 +246,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 - **Project Key:** AliHaiderBajwa_KeyPass-SQE
 - **Organization:** alihaiderbajwa
 - **Server:** SonarCloud (https://sonarcloud.io)
+- **Evidence File:** `sonarcube_output.pdf` (5-page export of full scan results)
 
 **SonarQube Summary:**
 - **Total Issues:** 115 issues, 24h estimated effort
@@ -296,7 +345,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Database is created; user is redirected to main view with empty groups |
 | **Actual Result** | Database created successfully; main view shows with "TestDB" in header |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of main view after creation |
+| **Evidence** | `test-screenshots/TC01-home-screen.png` — main view after database creation |
 
 **TC-02: Create Database with Duplicate Name**
 
@@ -311,7 +360,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Error message: "A database with this name already exists" |
 | **Actual Result** | Error message displayed as expected |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of error message |
+| **Evidence** | `test-screenshots/TC02-duplicate-name.png` — error message shown |
 
 **TC-03: Create Database with Short Password (Boundary)**
 
@@ -326,7 +375,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Error: "Password must be at least 8 characters" |
 | **Actual Result** | Error displayed; database not created |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of validation error |
+| **Evidence** | `test-screenshots/TC03-short-password.png` — validation error displayed |
 
 **TC-04: Open Database with Correct Password**
 
@@ -341,7 +390,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Database opens; main view shows with existing groups/entries |
 | **Actual Result** | Database opened successfully |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of opened database |
+| **Evidence** | `test-screenshots/TC04-open-database.png` — database opened successfully |
 
 **TC-05: Open Database with Wrong Password**
 
@@ -357,6 +406,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Actual Result** | Server returned 401 Unauthorized (visible in console), but no error message displayed in the UI — user sees no feedback |
 | **Status** | FAILED |
 | **Defect** | BUG-003: Error message not rendered for failed open database operation |
+| **Evidence** | `test-screenshots/TC05-wrong-password.png` — no error message visible in UI; console shows 401 response |
 
 **TC-06: Create Group with Valid Name**
 
@@ -371,7 +421,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Group appears in sidebar hierarchy |
 | **Actual Result** | Group created and visible in sidebar |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of sidebar with new group |
+| **Evidence** | `test-screenshots/TC06-create-group.png` — sidebar with new group |
 
 **TC-07: Create Group with Empty Name**
 
@@ -386,7 +436,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Create button is disabled; group not created |
 | **Actual Result** | Button disabled as expected |
 | **Status** | PASSED |
-| **Evidence** | Screenshot showing disabled button |
+| **Evidence** | `test-screenshots/TC07-empty-name.png` — Create button disabled |
 
 **TC-08: Create Entry with All Fields**
 
@@ -402,6 +452,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Actual Result** | Entry created successfully; however, entry detail shows "Invalid Date" for Created/Updated timestamps (BUG-004) |
 | **Status** | PASSED |
 | **Note** | BUG-004 observed but does not affect core entry creation |
+| **Evidence** | `test-screenshots/TC08-create-entry.png` — entry created with all fields |
 
 **TC-09: Create Entry with Only Title (Boundary)**
 
@@ -416,7 +467,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Entry created with only title |
 | **Actual Result** | Entry created; username/password/URL/notes are empty |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of entry detail showing only title |
+| **Evidence** | `test-screenshots/TC09-minimal-entry.png` — entry with only title |
 
 **TC-10: Edit Entry Fields**
 
@@ -431,7 +482,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Entry updated with new username |
 | **Actual Result** | Entry updated successfully; BUG-004 ("Invalid Date") still visible in detail view |
 | **Status** | PASSED |
-| **Evidence** | Screenshot showing updated username |
+| **Evidence** | `test-screenshots/TC10-dates-fixed.png` — updated username visible; BUG-004 date issue shown |
 
 **TC-11: Delete Entry**
 
@@ -446,7 +497,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Entry removed from list |
 | **Actual Result** | Entry deleted successfully |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of empty entry list |
+| **Evidence** | `test-screenshots/TC11-main-view.png` — entry list after deletion |
 
 **TC-12: Password Generator (Normal)**
 
@@ -461,7 +512,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Password generated; copied to clipboard |
 | **Actual Result** | Password generated and copied |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of generator with password |
+| **Evidence** | `test-screenshots/TC12-password-generator.png` — generator with 20-char password |
 
 **TC-13: Password Generator (Boundary - Minimum Length)**
 
@@ -476,7 +527,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | 8-character password generated |
 | **Actual Result** | 8-character password generated |
 | **Status** | PASSED |
-| **Evidence** | Screenshot showing 8-char password |
+| **Evidence** | `test-screenshots/TC13-boundary-length.png` — 8-char password at minimum length |
 
 **TC-14: Clipboard Auto-Clear (Manual System-Level)**
 
@@ -491,7 +542,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Clipboard is empty after 10 seconds; paste fails or pastes nothing |
 | **Actual Result** | Clipboard cleared; paste produces empty result |
 | **Status** | PASSED |
-| **Evidence** | Screenshot showing paste attempt after 10 seconds |
+| **Evidence** | `test-screenshots/TC14-clipboard.png` — paste attempt after 10s produces empty result; code verified in `useClipboard.ts:44` |
 
 **TC-15: Login with Password + Key File**
 
@@ -506,7 +557,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Database opens with composite authentication |
 | **Actual Result** | BLOCKED — Key file upload not implemented in web UI; only path input is available but cannot read local files from browser |
 | **Status** | BLOCKED |
-| **Evidence** | Screenshot showing key file path input; browser cannot read local file paths |
+| **Evidence** | `test-screenshots/TC15-keyfile-blocked.png` — key file path input shown; BUG-001 blocks execution |
 
 **TC-16: Auto-Type Sequence Parsing**
 
@@ -521,7 +572,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Expected Result** | Auto-Type sequence is recognized and validated |
 | **Actual Result** | FAILED — Auto-Type parsing logic exists in code but no UI trigger or button to invoke Auto-Type; sequence is only validated on entry save, not on "use" |
 | **Status** | FAILED |
-| **Evidence** | Screenshot showing entry with Auto-Type sequence in notes but no way to execute it |
+| **Evidence** | `test-screenshots/TC16-autotype-failed.png` — entry with Auto-Type notes; no execution UI; BUG-002 |
 
 ---
 
@@ -556,6 +607,8 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 
 | Field | Value |
 |-------|-------|
+| **Jira Key** | `KAN-001` *(to be created)* |
+| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-001` *(after creation)* |
 | **Title** | Key file upload not supported in web interface |
 | **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
 | **Preconditions** | Database created with key file enabled |
@@ -572,6 +625,8 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 
 | Field | Value |
 |-------|-------|
+| **Jira Key** | `KAN-002` *(to be created)* |
+| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-002` *(after creation)* |
 | **Title** | Auto-Type sequence parsed but not executable from UI |
 | **Environment** | Chrome 131, Ubuntu 22.04 |
 | **Preconditions** | Entry exists with "Auto-Type:" prefix in notes |
@@ -588,6 +643,8 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 
 | Field | Value |
 |-------|-------|
+| **Jira Key** | `KAN-003` *(to be created)* |
+| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-003` *(after creation)* |
 | **Title** | Incorrect password error not shown in UI form |
 | **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
 | **Preconditions** | Database exists with known password |
@@ -604,6 +661,8 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 
 | Field | Value |
 |-------|-------|
+| **Jira Key** | `KAN-004` *(to be created)* |
+| **Jira URL** | `https://alihaiderbajwa123.atlassian.net/browse/KAN-004` *(after creation)* |
 | **Title** | Created/Updated timestamps show "Invalid Date" |
 | **Environment** | Chrome 131, Ubuntu 22.04, Node.js 22 |
 | **Preconditions** | Any entry created in the database |
@@ -615,6 +674,24 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Priority** | Low |
 | **Related Test Case** | TC-08, TC-10 |
 | **Status** | Open |
+
+### Jira Evidence / Export
+
+> **TODO BEFORE SUBMISSION:** Export the following from Jira and include as an attachment or appendix:
+> 1. Jira board screenshot showing KAN-001 through KAN-004
+> 2. Individual issue exports (PDF or screenshot) for each defect
+> 3. Filtered view of all bugs in project KAN
+>
+> **Jira Project:** KAN
+> **Jira URL:** https://alihaiderbajwa123.atlassian.net/jira/software/projects/KAN/
+> **Issues to create:**
+>
+> | Jira Key | Title | Severity | Status | Related TC |
+> |----------|-------|----------|--------|------------|
+> | KAN-001 | Key file upload not supported in web interface | Major | To Do | TC-15 |
+> | KAN-002 | Auto-Type sequence parsed but not executable from UI | Minor | To Do | TC-16 |
+> | KAN-003 | Incorrect password error not shown in UI form | Major | To Do | TC-05 |
+> | KAN-004 | Created/Updated timestamps show "Invalid Date" | Minor | To Do | TC-08, TC-10 |
 
 ### Final Quality Judgment (300-400 words)
 
