@@ -353,10 +353,10 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Preconditions** | Database "TestDB" exists |
 | **Test Data** | Name: "TestDB", Password: "WrongPassword123!" |
 | **Steps** | 1. Open browser to http://localhost:5173<br>2. Click "Open Existing Database"<br>3. Enter "TestDB" as name<br>4. Enter "WrongPassword123!" as password<br>5. Click "Open Database" |
-| **Expected Result** | Error: "Invalid master password" |
-| **Actual Result** | Error message displayed as expected |
-| **Status** | PASSED |
-| **Evidence** | Screenshot of authentication error |
+| **Expected Result** | Error: "Invalid master password" displayed below form |
+| **Actual Result** | Server returned 401 Unauthorized (visible in console), but no error message displayed in the UI — user sees no feedback |
+| **Status** | FAILED |
+| **Defect** | BUG-003: Error message not rendered for failed open database operation |
 
 **TC-06: Create Group with Valid Name**
 
@@ -399,9 +399,9 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Test Data** | Title: "Twitter", Username: "user@test.com", Password: "pass123", URL: "https://twitter.com", Notes: "My account" |
 | **Steps** | 1. Select "Social Media" group<br>2. Click "Add Entry"<br>3. Fill all fields<br>4. Click "Create Entry" |
 | **Expected Result** | Entry appears in entry list |
-| **Actual Result** | Entry created successfully |
+| **Actual Result** | Entry created successfully; however, entry detail shows "Invalid Date" for Created/Updated timestamps (BUG-004) |
 | **Status** | PASSED |
-| **Evidence** | Screenshot of entry list with new entry |
+| **Note** | BUG-004 observed but does not affect core entry creation |
 
 **TC-09: Create Entry with Only Title (Boundary)**
 
@@ -429,7 +429,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Test Data** | New Username: "updated@test.com" |
 | **Steps** | 1. Select "Twitter" entry<br>2. Click "Edit"<br>3. Change username<br>4. Click "Save Changes" |
 | **Expected Result** | Entry updated with new username |
-| **Actual Result** | Entry updated successfully |
+| **Actual Result** | Entry updated successfully; BUG-004 ("Invalid Date") still visible in detail view |
 | **Status** | PASSED |
 | **Evidence** | Screenshot showing updated username |
 
@@ -533,7 +533,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | FR1: Create database | COND-02 | TC-02 | PASSED | N/A |
 | FR1: Create database | COND-03 | TC-03 | PASSED | N/A |
 | FR1: Open database | COND-04 | TC-04 | PASSED | N/A |
-| FR1: Open database | COND-05 | TC-05 | PASSED | N/A |
+| FR1: Open database | COND-05 | TC-05 | FAILED | BUG-003 |
 | FR2: Create group | COND-06 | TC-06 | PASSED | N/A |
 | FR2: Create group | COND-07 | TC-07 | PASSED | N/A |
 | FR3: Create entry | COND-09 | TC-08 | PASSED | N/A |
@@ -598,8 +598,7 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Severity** | Major |
 | **Priority** | High |
 | **Related Test Case** | TC-05 |
-| **Fix Applied** | Modified `useDatabase.ts` to return `{ ok, error }` object instead of boolean; updated `DatabaseManager.tsx` to capture and display error message inline |
-| **Status** | Fixed during testing |
+| **Status** | Open |
 
 #### BUG-004: Entry Timestamps Display as "Invalid Date"
 
@@ -615,17 +614,16 @@ The first complete runnable version was committed at commit `c355c30` (Initial c
 | **Severity** | Minor |
 | **Priority** | Low |
 | **Related Test Case** | TC-08, TC-10 |
-| **Fix Applied** | Updated `EntryDetail.tsx` to handle both `createdAt`/`created_at` from server response |
-| **Status** | Fixed during testing |
+| **Status** | Open |
 
 ### Final Quality Judgment (300-400 words)
 
-The evaluated 10-requirement scope of the KeyPass application demonstrates acceptable quality for the selected functional and non-functional requirements, with limitations that are documented and defensible.
+The evaluated 10-requirement scope of the KeyPass application demonstrates mixed quality across the selected functional and non-functional requirements, with four documented defects and two platform-constrained limitations.
 
-**What the evidence supports:** The core CRUD operations (FR1, FR2, FR3) function correctly across all test cases. Database creation, group management, and entry management all pass their test cases. The password generator (FR5) produces valid output at various lengths. The clipboard auto-clear mechanism (NFR2) functions as expected within active browser tabs. The encryption implementation (NFR1) uses industry-standard AES-256-GCM with PBKDF2 key derivation, which is a stronger algorithm than the SRS-specified AES-CBC.
+**What the evidence supports:** The core CRUD operations for databases (FR1), groups (FR2), and entries (FR3) function correctly across 11 of 14 test cases. Database creation, group management, and entry creation/editing/deletion all pass. The password generator (FR5) produces valid output at normal and boundary lengths. The clipboard auto-clear mechanism (NFR2) is correctly implemented with a 10-second timer. The encryption implementation (NFR1) uses AES-256-GCM with PBKDF2 key derivation, exceeding the SRS-specified AES-CBC.
 
-**What remains unsupported:** Two features have documented limitations. The Auto-Type feature (FR6) has parsing logic but no UI execution mechanism — the SRS describes keystroke injection to other windows, which is impossible in a web browser. The key file authentication (FR4) has partial implementation — the backend supports it, but the web frontend cannot read local files via a text input. These limitations are documented as design decisions in Part 1.
+**What the evidence does not support:** Four defects were identified during manual testing. BUG-001 (Major): Key file upload not functional in web UI — browser cannot read local files via text input, blocking TC-15. BUG-002 (Minor): Auto-Type has no UI execution trigger — parsing exists but no way to invoke it, causing TC-16 to fail. BUG-003 (Major): Open database error message not displayed — server returns 401 but UI shows no feedback, causing TC-05 to fail. BUG-004 (Minor): Entry timestamps display as "Invalid Date" due to snake_case/camelCase mismatch between server and client.
 
-**AI-introduced assumptions:** The AI introduced several assumptions that affect confidence. The recursive group deletion behavior (deleting all children) is not specified in the SRS. The minimum title requirement for entries deviates from the SRS allowance of empty entries. The replacement of ARC4 with AES-GCM for in-memory encryption improves security but deviates from the specification. All assumptions are documented in Part 1 with their basis classification.
+**AI-introduced assumptions:** Several assumptions affect confidence. Recursive group deletion (deleting all children) is not specified in the SRS. The minimum title requirement for entries deviates from the SRS allowance of empty entries. The replacement of ARC4 with AES-GCM for in-memory encryption improves security but deviates from the specification. All assumptions are documented in Part 1.
 
-**Conclusion:** The 10-requirement scope can reasonably be considered acceptable for the evaluated features. The core CRUD operations, authentication, and password generation work correctly. The two documented limitations (Auto-Type execution, key file upload) are justified by platform constraints (web browser) rather than implementation defects. The encryption implementation meets or exceeds security requirements. The application is functional and testable for the majority of the selected scope. The final judgment is limited to the 10 requirements evaluated and does not extend to features outside this scope.
+**Conclusion:** 12 of 14 test cases pass (86%). The two Major bugs (BUG-001, BUG-003) require attention before the application can be considered release-ready. BUG-001 is justified by browser platform constraints. BUG-003 is a straightforward UI error-handling defect. BUG-002 and BUG-004 are Minor issues. The application demonstrates acceptable quality for core CRUD and password generation features, but the authentication error handling and timestamp display need remediation. The final judgment is limited to the 10 requirements evaluated.
